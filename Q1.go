@@ -70,6 +70,43 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 	}
 
 	temp[cell.factory][cell.warehouse].valid = true
+	//current := Cell{cell.cost,cell.quantity,cell.valid,cell.visited,cell.factory,cell.warehouse}
+	var f int
+	var w int
+
+	f = cell.factory
+	w = cell.warehouse
+
+	for {
+		completed := false
+		//horizontal
+
+		for i:=0 ; i< n ; i++{
+
+			if temp[f][i].valid && w != i{
+				path.append(temp[f][i])
+				w = i
+				if w == cell.warehouse {
+					completed = true
+				}
+				break
+			}
+		}
+
+		if completed{
+			break
+		}
+
+		for j := 0; j < n; j++ {
+			if temp[j][w].valid && f != j {
+				path.append(temp[j][w])
+				f = j
+				break
+			}
+		}
+
+	}
+
 	for i:=0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			if temp[i][j].valid{
@@ -78,7 +115,12 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 		}
 	}
 
-	return *new(Path)
+	fmt.Println()
+	for _,elem := range path.cells {
+		fmt.Printf("%d-%d ",elem.quantity, elem.cost)
+	}
+
+	return path
 
 }
 
