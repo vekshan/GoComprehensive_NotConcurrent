@@ -103,7 +103,7 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 			break
 		}
 
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if temp[j][w].valid && f != j {
 				path.append(temp[j][w])
 				path.cost += temp[j][w].cost
@@ -156,7 +156,7 @@ func hasNeighbours(temp [][]Cell, start Cell, c Cell, m int, n int) bool{
 	if start.warehouse == c.warehouse && c.factory != start.factory {
 		hasVertical = true
 	} else {
-		for j := 0; j < n; j++ {
+		for j := 0; j < m; j++ {
 			if temp[j][c.warehouse].quantity > 0 && j != c.factory && temp[j][c.warehouse].valid{ //CHECK IF SAME COLUMN ??
 				hasVertical = true
 				break
@@ -212,9 +212,13 @@ func main() {
 		m++
 	}
 
-	var supply [3]int
-	var demand [3]int
-	var problem [3][3] Cell
+
+	supply := make([]int, m)
+	demand := make([]int, n)
+	problem := make([][]Cell,m)
+	for i := range problem{
+		problem[i] = make([]Cell, n)
+	}
 
 	costFile ,err := os.Open(fileName)
 
@@ -273,6 +277,7 @@ func main() {
 	fmt.Println(supply)
 	fmt.Println(demand)
 
+	steppingStone(&problem,m,n)
 
 
 
