@@ -12,7 +12,6 @@ type Cell struct {
 	cost int
 	quantity int
 	valid bool
-	visited bool
 	factory int
 	warehouse int
 }
@@ -63,7 +62,6 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 		for i:=0; i < m; i++ {
 			for j := 0; j < n; j++ {
 				if !hasNeighbours(temp, cell, temp[i][j], m, n) && temp[i][j].valid{
-					temp[i][j].visited = true
 					temp[i][j].valid = false
 					closed = false
 				}
@@ -204,6 +202,7 @@ func main() {
 
 	defer file.Close()
 
+
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	n := len(strings.Split(scanner.Text()," ")) - 2
@@ -223,18 +222,45 @@ func main() {
 		panic(err)
 	}
 	defer costFile.Close()
+
+
+	var fileName1 string
+	fmt.Print("Enter initial solution file: ")
+	fmt.Scan(&fileName1)
+	fmt.Println()
+	initialFile, err1 := os.Open(fileName1)
+
+	if err1 != nil {
+		panic(err1)
+	}
+	defer initialFile.Close()
+
 	scannerCost := bufio.NewScanner(costFile)
 	scannerCost.Scan()
 
+	scannerInitial := bufio.NewScanner(initialFile)
+	scannerInitial.Scan()
+
 	for i:= 0; i < m ; i++{
 		scannerCost.Scan()
+		scannerInitial.Scan()
 
 		row := strings.Split(scannerCost.Text(), " ")
 		temp,_ := strconv.Atoi(row[ len(row) - 1 ])
 
+		row1 := strings.Split(scannerInitial.Text(), " ")
+
 		supply[i] = temp
 		for j:= 0; j < n; j++{
 			problem[i][j].cost,_ = strconv.Atoi(row[j+1])
+			problem[i][j].factory = i
+			problem[i][j].warehouse = j
+			problem[i][j].valid = true
+			qty, err := strconv.Atoi(row1[j+1])
+			if err == nil {
+				problem[i][j].quantity = qty
+			}
+
 		}
 	}
 	scannerCost.Scan()
