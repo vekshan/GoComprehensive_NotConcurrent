@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
 
 type Cell struct {
 	cost int
@@ -13,6 +18,7 @@ type Cell struct {
 
 type Path struct {
 	cells []Cell
+	cost int
 }
 
 func (p *Path) append(c Cell) {
@@ -47,9 +53,9 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 		copy(temp[i], (*problem)[i])
 	}
 
-	path := Path{make([]Cell, 0)}
+	path := Path{make([]Cell, 0),0}
 	path.append(cell)
-
+	path.cost += cell.cost
 
 	for { //break when closed
 		closed := true
@@ -85,6 +91,7 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 
 			if temp[f][i].valid && w != i{
 				path.append(temp[f][i])
+				path.cost -= temp[f][i].cost
 				w = i
 				if w == cell.warehouse {
 					completed = true
@@ -100,6 +107,7 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 		for j := 0; j < n; j++ {
 			if temp[j][w].valid && f != j {
 				path.append(temp[j][w])
+				path.cost += temp[j][w].cost
 				f = j
 				break
 			}
@@ -120,6 +128,7 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 		fmt.Printf("%d-%d ",elem.quantity, elem.cost)
 	}
 
+	fmt.Println(path.cost)
 	return path
 
 }
@@ -160,6 +169,8 @@ func hasNeighbours(temp [][]Cell, start Cell, c Cell, m int, n int) bool{
 
 }
 
+
+
 func main() {
 	problem := [][]Cell{{Cell{6,0,true,false,0,0},
 	Cell{8,25,true,false,0,1},
@@ -177,6 +188,32 @@ func main() {
 	fmt.Println(bool)
 
 	steppingStone(&problem,3,3)
+
+	var fileName string
+	fmt.Print("Enter cost file: ")
+	fmt.Scan(&fileName)
+	fmt.Println()
+	file ,err := os.Open(fileName)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	n := len(strings.Split(scanner.Text()," ")) - 2
+
+	m := -1
+	for scanner.Scan(){
+		m++
+	}
+
+	fmt.Println(m)
+	fmt.Println(n)
+
+	
 
 
 
