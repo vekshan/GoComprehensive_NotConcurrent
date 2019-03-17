@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -133,6 +134,7 @@ func marginalCost(cell Cell ,problem *[][]Cell, m int, n int) Path { //ADD MARGI
 
 }
 
+
 func hasNeighbours(temp [][]Cell, start Cell, c Cell, m int, n int) bool{
 	hasHorizontal := false
 	hasVertical := false
@@ -172,7 +174,7 @@ func hasNeighbours(temp [][]Cell, start Cell, c Cell, m int, n int) bool{
 
 
 func main() {
-	problem := [][]Cell{{Cell{6,0,true,false,0,0},
+	/*problem := [][]Cell{{Cell{6,0,true,false,0,0},
 	Cell{8,25,true,false,0,1},
 	Cell{10,125,true,false,0,2}},
 
@@ -187,9 +189,10 @@ func main() {
 	bool := hasNeighbours( problem , problem[0][0],problem[2][0], 3,3)
 	fmt.Println(bool)
 
-	steppingStone(&problem,3,3)
+	steppingStone(&problem,3,3)*/
 
 	var fileName string
+
 	fmt.Print("Enter cost file: ")
 	fmt.Scan(&fileName)
 	fmt.Println()
@@ -210,10 +213,42 @@ func main() {
 		m++
 	}
 
-	fmt.Println(m)
-	fmt.Println(n)
+	var supply [3]int
+	var demand [3]int
+	var problem [3][3] Cell
 
-	
+	costFile ,err := os.Open(fileName)
+
+	if err != nil {
+		panic(err)
+	}
+	defer costFile.Close()
+	scannerCost := bufio.NewScanner(costFile)
+	scannerCost.Scan()
+
+	for i:= 0; i < m ; i++{
+		scannerCost.Scan()
+
+		row := strings.Split(scannerCost.Text(), " ")
+		temp,_ := strconv.Atoi(row[ len(row) - 1 ])
+
+		supply[i] = temp
+		for j:= 0; j < n; j++{
+			problem[i][j].cost,_ = strconv.Atoi(row[j+1])
+		}
+	}
+	scannerCost.Scan()
+	row := strings.Split(scannerCost.Text(), " ")
+	for j:= 0; j < n; j++{
+		demand[j],_ = strconv.Atoi(row[j+1])
+	}
+
+	fmt.Println(problem)
+	fmt.Println(supply)
+	fmt.Println(demand)
+
+
+
 
 
 
